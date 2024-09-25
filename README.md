@@ -4,7 +4,7 @@ Basic Prometheus exporter for Halon SMTPD server.
 
 It uses the [control socket API](https://docs.halon.io/manual/api_control_sockets.html) to retrieve statistics from the local SMTP servers.
 
-These are then formatted in the metrics format and served at `http//localhost:9393/metrics` (by default).
+These are then formatted in the metrics format and served at `http://localhost:9393/metrics` (by default).
 
 ## Config
 
@@ -17,7 +17,7 @@ The following environment variables are available:
 
 ## Protobuf
 
-You will need the Protobuf definitions matching your `smtpd` version, they can be found [here](https://docs.halon.io/protobuf-schemas/).
+You may need to build this with the Protobuf definitions matching your `smtpd` version. The definitions can be found [here](https://docs.halon.io/protobuf-schemas/).
 
 Clone this repo, grab the `smtpd.proto` file for your version.
 
@@ -37,4 +37,10 @@ Generate Golang types:
 
 ```
 protoc -I=$(pwd) --go_out=$(pwd) --go_opt=Msmtpd.proto=pkg/halon_smtpd_ctl smtpd.proto
+```
+
+Now you can probably build the program:
+
+```
+go build -o halon-smtpd-exporter .
 ```
