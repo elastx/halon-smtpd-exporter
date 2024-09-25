@@ -1,0 +1,30 @@
+name: build-pr
+
+on:
+  pull_request: {}
+
+permissions:
+  contents: read
+
+env:
+  KO_DOCKER_REPO: quay.io/elastx/halon-smtpd-exporter
+
+jobs:
+  goreleaser:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: anchore/sbom-action/download-syft@v0.17.2
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: './go.mod'
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --snapshot --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

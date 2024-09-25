@@ -1,0 +1,78 @@
+# vim: set ts=2 sw=2 tw=0 fo=jcroql
+version: 2
+
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod tidy
+
+gomod:
+  proxy: false
+
+builds:
+  - main: .
+    binary: bin/halon-smtpd-exporter
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+      - linux
+    goarch:
+      - amd64
+    flags:
+      - -trimpath
+
+# Shamelessly stolen from upstream https://github.com/goreleaser/goreleaser/blob/main/.goreleaser.yaml
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^test:"
+      - "^chore"
+      - "merge conflict"
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+      - go mod tidy
+  groups:
+    - title: Dependency updates
+      regexp: '^.*?(feat|fix)\(deps\)!?:.+$'
+      order: 300
+    - title: "New Features"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 100
+    - title: "Security updates"
+      regexp: '^.*?sec(\([[:word:]]+\))??!?:.+$'
+      order: 150
+    - title: "Bug fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 200
+    - title: "Documentation updates"
+      regexp: ^.*?doc(\([[:word:]]+\))??!?:.+$
+      order: 400
+    - title: "Build process updates"
+      regexp: ^.*?build(\([[:word:]]+\))??!?:.+$
+      order: 400
+    - title: Other work
+      order: 9999
+
+kos:
+  - tags:
+    - '{{.Version}}'
+    - latest
+    bare: true
+    preserve_import_paths: false
+    platforms:
+    - freebsd/amd64
+    - linux/amd64
+
+sboms:
+  - artifacts: archive
+
+release:
+  name_template: "v{{ .Version }}"
+  footer: |
+    **Full Changelog**: https://github.com/elastx/halon-smtpd-exporter/compare/{{ .PreviousTag }}...{{ .Tag }}

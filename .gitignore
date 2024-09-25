@@ -1,0 +1,5 @@
+/bin/
+/config
+/dist
+/smtpd.proto
+/halon-smtpd-exporter
